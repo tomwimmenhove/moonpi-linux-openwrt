@@ -1,0 +1,8 @@
+Cross compiler:
+Chain from:
+ - gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf
+
+make ARCH=arm menuconfig 
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8 INSTALL_MOD_PATH=out modules
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j8 INSTALL_MOD_PATH=out modules_install
