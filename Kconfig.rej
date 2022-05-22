@@ -1,0 +1,19 @@
+--- Kconfig
++++ Kconfig
+@@ -15,6 +15,16 @@ config STMMAC_ETH
+ 
+ if STMMAC_ETH
+ 
++config STMMAC_INIT_ONCE_HACK
++	bool "Initialize STMMAC only once"
++	depends on INET
++	depends on STMMAC_ETH
++	default n
++	help
++	  With this option, the STMMAC will never be released, even when the device is closed.
++	  This can be useful in cases where it takes a long time for the link to become active again.
++	  (which happends on the MAC in the Allwinner V3S and possibly others)
++
+ config STMMAC_SELFTESTS
+ 	bool "Support for STMMAC Selftests"
+ 	depends on INET
