@@ -578,6 +578,13 @@ static void sun8i_dwmac_set_mac(void __iomem *ioaddr, bool enable)
 {
 	u32 t, r;
 
+#if IS_ENABLED(CONFIG_STMMAC_INIT_ONCE_HACK)
+	if (!enable)
+	{
+		return;
+	}
+#endif
+
 	t = readl(ioaddr + EMAC_TX_CTL0);
 	r = readl(ioaddr + EMAC_RX_CTL0);
 	if (enable) {

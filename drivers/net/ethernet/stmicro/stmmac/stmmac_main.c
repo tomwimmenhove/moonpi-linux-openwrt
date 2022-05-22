@@ -112,6 +112,10 @@ static void stmmac_exit_fs(struct net_device *dev);
 
 #define STMMAC_COAL_TIMER(x) (jiffies + usecs_to_jiffies(x))
 
+#if IS_ENABLED(CONFIG_STMMAC_INIT_ONCE_HACK)
+static int init_once_hack = 0;
+#endif
+
 /**
  * stmmac_verify_args - verify the driver parameters.
  * Description: it checks the driver parameters and set a default in case of
@@ -760,12 +764,14 @@ static int stmmac_init_ptp(struct stmmac_priv *priv)
 	return 0;
 }
 
+#if !IS_ENABLED(CONFIG_STMMAC_INIT_ONCE_HACK)
 static void stmmac_release_ptp(struct stmmac_priv *priv)
 {
 	if (priv->plat->clk_ptp_ref)
 		clk_disable_unprepare(priv->plat->clk_ptp_ref);
 	stmmac_ptp_unregister(priv);
 }
+#endif
 
 /**
  *  stmmac_mac_flow_ctrl - Configure flow control in all queues
@@ -2639,6 +2645,15 @@ static int stmmac_open(struct net_device *dev)
 	u32 chan;
 	int ret;
 
+#if IS_ENABLED(CONFIG_STMMAC_INIT_ONCE_HACK)
+	if (init_once_hack)
+	{
+		return 0;
+	}
+
+	init_once_hack = 1;
+#endif
+
 	if (priv->hw->pcs != STMMAC_PCS_RGMII &&
 	    priv->hw->pcs != STMMAC_PCS_TBI &&
 	    priv->hw->pcs != STMMAC_PCS_RTBI) {
@@ -2757,6 +2772,7 @@ dma_desc_error:
  */
 static int stmmac_release(struct net_device *dev)
 {
+#if !IS_ENABLED(CONFIG_STMMAC_INIT_ONCE_HACK)
 	struct stmmac_priv *priv = netdev_priv(dev);
 	u32 chan;
 
@@ -2793,6 +2809,7 @@ static int stmmac_release(struct net_device *dev)
 	netif_carrier_off(dev);
 
 	stmmac_release_ptp(priv);
+#endif
 
 	return 0;
 }
